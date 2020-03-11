@@ -28,12 +28,25 @@ type Apple struct {
 	Number int `yaml:"number"`
 }
 
+type Banana struct {
+	Name string `yaml:"name"`
+	Number int `yaml:"number"`
+}
+
 func (apple *Apple) GetFruitName() string {
 	return apple.Name
 }
 
 func (apple *Apple) GetNumber() int {
 	return apple.Number
+}
+
+func (banana *Banana) GetFruitName() string {
+	return banana.Name
+}
+
+func (banana *Banana) GetNumber() int {
+	return banana.Number
 }
 
 type tmpFruitBasket struct {
@@ -62,6 +75,13 @@ func (fruitBasket *FruitBasket) UnmarshalYAML(value *yaml.Node) error {
                 }
 
                 fruits = append(fruits, apple)
+            case "Banana":
+                banana := &Banana{}
+                if err := node.Decode(banana); err != nil {
+                    return err
+                }
+
+                fruits = append(fruits, banana)
             default:
                 return errors.New("Failed to interpret the fruit of type: \"" + tag + "\"")
             }
@@ -75,12 +95,15 @@ func (fruitBasket *FruitBasket) UnmarshalYAML(value *yaml.Node) error {
 
 func main() {
 	data := []byte(`
-capacity: 2
+capacity: 4
 Apple:
 - name: "apple1"
   number: 1
 - name: "apple2"
   number: 1
+Banana:
+- name: "banana1"
+  number: 2
 `)
 
 	fruitBasket := NewFruitBasket()
